@@ -6,7 +6,7 @@ on:
       ipa_url:
         description: "The direct URL to the decrypted IPA file"
         default: ""
-        required: true
+        required: false
         type: string
 
       tweak_version:
@@ -21,7 +21,6 @@ concurrency:
 
 jobs:
   build:
-    name: 
     runs-on: macos-12
     permissions:
       contents: write
@@ -72,8 +71,18 @@ jobs:
       - name: Install Pyzule
         run: bash -c "$(curl https://raw.githubusercontent.com/asdfzxcvbn/pyzule/main/install-pyzule.sh)"
 
+      - name: Download IPA (Auto) # good up to 37d><43d
+        if: ${{ !inputs.ipa_url }}
+        uses: level3tjg/decryptedappstore-action@main
+        with:
+          appstore_url: "https://apps.apple.com/us/app/youtube-watch-listen-stream/id544007664"
+          cache: true
+          path: ${{ github.workspace }}/youtube.ipa
+          token: ${{ secrets.DECRYPTEDAPPSTORE_SESSION_TOKEN }} # Get token: https://imgur.com/iERxx4W.png and how to set it: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository
+
       - name: Download YouTube
         id: download_youtube
+        if: ${{ inputs.ipa_url }}
         run: wget "${{ inputs.ipa_url }}" --no-verbose -O ${{ github.workspace }}/youtube.ipa
 
       - name: Download YouTube Plus
