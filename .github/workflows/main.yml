@@ -136,13 +136,13 @@ jobs:
 
       - name: Download YouTube Plus
         id: download_ytp
-        if: ${{ inputs.ipa_url }}
         run: |
           deb_url="https://github.com/dayanch96/YTLite/releases/download/v${{ inputs.tweak_version }}/com.dvntm.ytlite_${{ inputs.tweak_version }}_iphoneos-arm.deb"
           wget "$deb_url" --no-verbose -O ${{ github.workspace }}/ytplus.deb
 
       - name: Download YouTube
         id: download_youtube
+        if: ${{ inputs.ipa_url }}
         run: wget "${{ inputs.ipa_url }}" --no-verbose -O ${{ github.workspace }}/youtube.ipa
 
       - name: Clone Open in YouTube (Safari extension)
