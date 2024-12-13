@@ -16,7 +16,7 @@ on:
         description: "Integrate YTUHD"
         type: boolean
         required: true
-        default: true
+        default: false
 
       enable_ryd:
         description: "Integrate Return YouTube Dislikes"
