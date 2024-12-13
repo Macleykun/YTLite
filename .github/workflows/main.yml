@@ -76,6 +76,7 @@ jobs:
         uses: levibostian/action-hide-sensitive-inputs@v1
 
       - name: Validate IPA URL
+        if: ${{ inputs.ipa_url }}
         run: |
           curl -L -r 0-1023 -o sample.part "${{ inputs.ipa_url }}" > /dev/null 2>&1
           file_type=$(file --mime-type -b sample.part)
