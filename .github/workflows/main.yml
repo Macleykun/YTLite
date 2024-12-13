@@ -1,6 +1,8 @@
 name: Create YouTube Plus app
 
 on:
+  schedule:
+    - cron: "0 0 * * 1"
   workflow_dispatch:
     inputs:
 
@@ -37,7 +39,7 @@ on:
       ipa_url:
         description: "URL to the decrypted IPA file"
         default: ""
-        required: true
+        required: false
         type: string
 
       tweak_version:
@@ -58,7 +60,7 @@ concurrency:
 
 jobs:
   build:
-    name: 
+    name: Compile
     runs-on: macos-latest
     permissions:
       contents: write
@@ -122,8 +124,18 @@ jobs:
       - name: Install cyan
         run: pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
 
+      - name: Download IPA (Auto) # good up to 37d><43d
+        if: ${{ !inputs.ipa_url }}
+        uses: level3tjg/decryptedappstore-action@main
+        with:
+          appstore_url: "https://apps.apple.com/us/app/youtube-watch-listen-stream/id544007664"
+          cache: true
+          path: ${{ github.workspace }}/youtube.ipa
+          token: ${{ secrets.DECRYPTEDAPPSTORE_SESSION_TOKEN }} # Get token: https://imgur.com/iERxx4W.png and how to set it: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository
+
       - name: Download YouTube Plus
         id: download_ytp
+        if: ${{ inputs.ipa_url }}
         run: |
           deb_url="https://github.com/dayanch96/YTLite/releases/download/v${{ inputs.tweak_version }}/com.dvntm.ytlite_${{ inputs.tweak_version }}_iphoneos-arm.deb"
           wget "$deb_url" --no-verbose -O ${{ github.workspace }}/ytplus.deb
